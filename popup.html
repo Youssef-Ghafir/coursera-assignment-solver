@@ -32,9 +32,56 @@
       font-size: 1.5rem;
       font-weight: 700;
       text-align: center;
-      margin: 0 0 20px 0;
+      margin: 0 0 16px 0;
       letter-spacing: -0.025em;
       color: var(--foreground);
+    }
+
+    /* Guide / Accordion Styling */
+    details.guide {
+      background-color: var(--muted);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    details.guide summary {
+      font-weight: 500;
+      color: var(--foreground);
+      cursor: pointer;
+      list-style: none; 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    details.guide summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.guide summary::after {
+      content: "▼";
+      font-size: 0.6rem;
+      transition: transform 0.2s ease;
+    }
+
+    details.guide[open] summary::after {
+      transform: rotate(180deg);
+    }
+
+    details.guide ol {
+      margin: 10px 0 0 0;
+      padding-left: 20px;
+      line-height: 1.4;
+    }
+
+    details.guide li {
+      margin-bottom: 6px;
     }
 
     /* Form & Input Styling */
@@ -48,7 +95,7 @@
     input {
       display: flex;
       height: 36px;
-      width: calc(100% - 24px); /* Accounting for padding */
+      width: calc(100% - 24px);
       border-radius: var(--radius);
       border: 1px solid var(--input);
       background-color: transparent;
@@ -125,7 +172,7 @@
     #status {
       margin-top: 4px;
       font-size: 0.75rem;
-      color: #16a34a; /* success green */
+      color: #16a34a; 
       text-align: center;
       min-height: 14px;
     }
@@ -148,9 +195,11 @@
     .footer a:hover {
       text-decoration: underline;
     }
+
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
     .spinner {
       display: inline-block;
       width: 14px;
@@ -167,6 +216,14 @@
 <body>
 
   <h1 class="title">Assignment Solver</h1>
+
+  <details class="guide">
+    <summary>📖 How to use</summary>
+    <ol>
+      <li>Get a free Gemini API key and save it below.</li>
+      <li>Click <strong>Answer the questions</strong> to get AI solutions.</li>
+    </ol>
+  </details>
 
   <div>
     <label class="label">API Key Configuration</label>
