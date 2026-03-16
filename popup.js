@@ -80,7 +80,7 @@ document.getElementById("explainBtn").addEventListener("click", async () => {
           }
         );
       } else {
-        showResult("Please highlight some text on the page first.", "error");
+        showResult("Something went wrong while extracting the content.", "error");
         resetButton();
       }
     });
@@ -127,7 +127,7 @@ document.getElementById("showQuestionsBtn").addEventListener("click", async () =
       });
 
     } else {
-      resultDiv.innerText = "No questions found. Please make sure you're on a quiz page and try again.";
+      resultDiv.innerText = "Something went wrong while extracting the content.";
     }
   });
 });
