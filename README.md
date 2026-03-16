@@ -1,5 +1,5 @@
 # Coursera Assignment Solver 🎓
-
+![Assignment Solver UI](assets/image.png)
 A sleek, lightweight Chrome Extension powered by the Google Gemini API to help you extract and solve Coursera assignments directly from your browser. 
 
 ## ✨ Features
