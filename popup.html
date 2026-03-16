@@ -84,6 +84,19 @@
       margin-bottom: 6px;
     }
 
+    details.guide a {
+      color: var(--foreground);
+      font-weight: 600;
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      text-underline-offset: 2px;
+      transition: text-decoration-color 0.2s;
+    }
+
+    details.guide a:hover {
+      text-decoration-color: var(--foreground);
+    }
+
     /* Form & Input Styling */
     .label {
       display: block;
@@ -220,7 +233,7 @@
   <details class="guide">
     <summary>📖 How to use</summary>
     <ol>
-      <li>Get a free Gemini API key and save it below.</li>
+      <li>Get a free <a href="https://ai.google.dev/aistudio" target="_blank">Gemini API key</a> and save it below.</li>
       <li>Click <strong>Answer the questions</strong> to get AI solutions.</li>
     </ol>
   </details>
