@@ -127,7 +127,7 @@ document.getElementById("showQuestionsBtn").addEventListener("click", async () =
       });
 
     } else {
-      resultDiv.innerText = "No questions found. Please highlight some text on the page first.";
+      resultDiv.innerText = "No questions found. Please make sure you're on a quiz page and try again.";
     }
   });
 });
