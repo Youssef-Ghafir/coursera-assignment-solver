@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Assignment Solver",
+  "version": "1.0.0",
+  "description": "An AI-powered assistant to help extract and solve Coursera assignments.",
+  
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["*://*.coursera.org/*"],
+      "js": ["content.js"]
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Assignment Solver"
+  }
+}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    /* Shadcn UI Color Palette & Typography */
+    :root {
+      --background: #ffffff;
+      --foreground: #09090b;
+      --muted: #f4f4f5;
+      --muted-foreground: #71717a;
+      --border: #e4e4e7;
+      --input: #e4e4e7;
+      --primary: #18181b;
+      --primary-foreground: #fafafa;
+      --radius: 0.5rem;
+    }
+
+    body {
+      width: 350px;
+      padding: 20px;
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Title Styling */
+    .title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 0 0 20px 0;
+      letter-spacing: -0.025em;
+      color: var(--foreground);
+    }
+
+    /* Form & Input Styling */
+    .label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    input {
+      display: flex;
+      height: 36px;
+      width: calc(100% - 24px); /* Accounting for padding */
+      border-radius: var(--radius);
+      border: 1px solid var(--input);
+      background-color: transparent;
+      padding: 8px 12px;
+      font-size: 0.875rem;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    /* Button Styling */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      height: 36px;
+      padding: 8px 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s, color 0.2s;
+      border: 1px solid transparent;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .btn-primary:hover {
+      background-color: #27272a;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border-color: var(--input);
+      color: var(--foreground);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--muted);
+    }
+
+    /* Divider */
+    .divider {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+      width: 100%;
+    }
+
+    /* Results Area */
+    #result {
+      margin-top: 12px;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: var(--background);
+      display: none;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    #status {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      color: #16a34a; /* success green */
+      text-align: center;
+      min-height: 14px;
+    }
+
+    /* Footer Styling */
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    .footer a {
+      color: var(--foreground);
+      font-weight: 600;
+      text-decoration: none;
+      transition: text-decoration 0.2s;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="title">Assignment Solver</h1>
+
+  <div>
+    <label class="label">API Key Configuration</label>
+    <input type="password" id="apiKeyInput" placeholder="Paste your Gemini API Key">
+    <button id="saveBtn" class="btn btn-primary">Save Key</button>
+    <div id="status"></div>
+  </div>
+
+  <hr class="divider" />
+
+  <div>
+    <button id="explainBtn" class="btn btn-primary">Answer the questions !</button>
+    <button id="showQuestionsBtn" class="btn btn-outline">Show extracted questions</button>
+    <div id="result"></div>
+  </div>
+
+  <div class="footer">
+    created by <a href="https://github.com/Youssef-Ghafir" target="_blank">YG</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
