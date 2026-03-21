@@ -1,9 +1,11 @@
 # Coursera Auto Solver 🎓
 
 <div align="center">
-  <img src="assets/icon.png" alt="Coursera Auto Solver Icon" width="128" />
+  <img src="icons/icon128.png" alt="Coursera Auto Solver Icon" width="128" />
   <p><em>Speedrun your courses smoothly</em></p>
 </div>
+
+![Coursera Auto Solver UI](assets/image.png)
 
 A sleek, lightweight Chrome Extension to automate and help you navigate your Coursera courses with ease. 
 
