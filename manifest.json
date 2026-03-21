@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Coursera Auto Solver",
   "version": "1.0.0",
-  "description": "This is a coursera auto solver extension for coursera assignments, quizzes. you can use to make all the videos,lectures,quizzes,assignments complete.",
+  "description": "An AI-powered extension to instantly auto-complete Coursera videos, readings, and automatically solve quizzes.",
   "permissions": [
     "activeTab",
     "scripting",

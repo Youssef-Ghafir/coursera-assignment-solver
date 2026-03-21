@@ -43,6 +43,38 @@ window.addEventListener("message", (event) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "solveQuizDirectly") {
+        sendResponse({ status: "started" });
+        showOrUpdateBanner("Extracting questions and contacting AI... 🤖", "info");
+
+        const arrayQuestions = scrapeAssessment();
+        
+        if (!arrayQuestions || arrayQuestions.length === 0) {
+            showOrUpdateBanner("No questions found on this page! Are you on a quiz?", "error");
+            setTimeout(hideBanner, 4000);
+            return;
+        }
+
+        console.log("Sending to AI background script...", arrayQuestions);
+        
+        // Content script bypasses popup and talks directly to the stable background script
+        chrome.runtime.sendMessage(
+          { action: "fetchAIExplanation", text: arrayQuestions },
+          (aiResponse) => {
+            if (aiResponse && aiResponse.error) {
+              showOrUpdateBanner("Error: " + aiResponse.error, "error");
+              setTimeout(hideBanner, 5000);
+            } else if (aiResponse && aiResponse.result) {
+              applyAnswersToDOM(aiResponse.result);
+              showOrUpdateBanner("Answers applied successfully! ✅", "success");
+              setTimeout(hideBanner, 4000);
+            } else {
+              showOrUpdateBanner("An unknown error occurred.", "error");
+              setTimeout(hideBanner, 4000);
+            }
+          }
+        );
+    }
     if (request.action === "getSelection") {
         const arrayQuestions = scrapeAssessment();
         console.log(arrayQuestions);
@@ -286,57 +318,53 @@ async function startCompletionLoop() {
 
         console.log(`Found ${itemsToComplete.length} items to complete! Starting loop...`);
 
-        // STEP B: Complete them one by one based on explicitly known types
-        for (let i = 0; i < itemsToComplete.length; i++) {
-            const itemObj = itemsToComplete[i];
-            const itemId = itemObj.id;
-            const itemType = itemObj.type;
+        // STEP B: Complete items in parallel chunks to dramatically speed up the process while avoiding rate limits!
+        const CHUNK_SIZE = 6;
+        console.log(`Found ${itemsToComplete.length} items to complete! Starting loop in chunks of ${CHUNK_SIZE}...`);
 
-            console.log(`[${i + 1}/${itemsToComplete.length}] Faking completion for item: ${itemId} (Type: ${itemType})`);
+        for (let i = 0; i < itemsToComplete.length; i += CHUNK_SIZE) {
+            const chunk = itemsToComplete.slice(i, i + CHUNK_SIZE);
+            const chunkEnd = Math.min(i + CHUNK_SIZE, itemsToComplete.length);
+            
+            showOrUpdateBanner(`Completing items ${i + 1} to ${chunkEnd} of ${itemsToComplete.length}... ⚡`);
 
-            // Update UI dynamically!
-            showOrUpdateBanner(`Completing item ${i + 1} of ${itemsToComplete.length}...`);
+            const chunkPromises = chunk.map(async (itemObj, indexInChunk) => {
+                const itemId = itemObj.id;
+                const itemType = itemObj.type;
+                const absIndex = i + indexInChunk + 1;
+                
+                console.log(`[${absIndex}/${itemsToComplete.length}] Faking completion for item: ${itemId} (Type: ${itemType})`);
 
-            try {
-                // Coursera API fallback: sometimes it accepts '~' as the current logged-in user!
-                const finalUserId = capturedUserId || "~";
+                try {
+                    const finalUserId = capturedUserId || "~";
 
-                if (itemType === 'lecture' || itemType === 'unknown') {
-                    // 1) Complete it natively as a Video
-                    await fetch(`https://www.coursera.org/api/opencourse.v1/user/${finalUserId}/course/${capturedCourseId}/item/${itemId}/lecture/videoEvents/ended?autoEnroll=false`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF3-Token": capturedAuthToken
-                        },
-                        body: JSON.stringify({ "contentRequestBody": {} })
-                    });
-                } else if (itemType === 'supplement') {
-                    // 2) Complete it natively as a Reading/Supplement without any fallback
-                    if (internalCourseId) {
-                        await fetch(`https://www.coursera.org/api/onDemandSupplementCompletions.v1`, {
+                    if (itemType === 'lecture' || itemType === 'unknown') {
+                        return fetch(`https://www.coursera.org/api/opencourse.v1/user/${finalUserId}/course/${capturedCourseId}/item/${itemId}/lecture/videoEvents/ended?autoEnroll=false`, {
                             method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF3-Token": capturedAuthToken
-                            },
-                            body: JSON.stringify({
-                                "userId": parseInt(finalUserId) || finalUserId,
-                                "courseId": internalCourseId,
-                                "itemId": itemId
-                            })
+                            headers: { "Content-Type": "application/json", "X-CSRF3-Token": capturedAuthToken },
+                            body: JSON.stringify({ "contentRequestBody": {} })
                         });
+                    } else if (itemType === 'supplement') {
+                        if (internalCourseId) {
+                            return fetch(`https://www.coursera.org/api/onDemandSupplementCompletions.v1`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json", "X-CSRF3-Token": capturedAuthToken },
+                                body: JSON.stringify({ "userId": parseInt(finalUserId) || finalUserId, "courseId": internalCourseId, "itemId": itemId })
+                            });
+                        }
+                    } else {
+                        console.log(`[Skipping] Item ${itemId} has type '${itemType}' and does not need automation.`);
                     }
-                } else {
-                    console.log(`[Skipping] Item ${itemId} has type '${itemType}' and does not need automation.`);
+                } catch (e) {
+                    console.log(`[Error] Request failed for item ${itemId}`, e);
                 }
+            });
 
-            } catch (e) {
-                console.log(`[Error] Request failed for item ${itemId}`, e);
-            }
+            // Wait for all fetches in the current chunk to complete simultaneously
+            await Promise.all(chunkPromises);
 
-            // Introduce a tiny humanized delay so Coursera doesn't block the flood of requests
-            await new Promise(r => setTimeout(r, 300));
+            // Tiny intentional delay between major chunks to preserve session health
+            await new Promise(r => setTimeout(r, 400));
         }
 
         showOrUpdateBanner("Course Automagically Completed! Please refresh the page.", "success");

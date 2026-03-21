@@ -46,7 +46,7 @@ document.getElementById("explainBtn").addEventListener("click", async () => {
 
   // --- START LOADING STATE ---
   explainBtn.disabled = true;
-  explainBtn.innerHTML = `<span class="spinner"></span> Reading page...`;
+  explainBtn.innerHTML = `<span class="spinner"></span> Starting AI...`;
   explainBtn.style.opacity = "0.7";
   explainBtn.style.cursor = "not-allowed";
   resultDiv.style.display = "none"; // Hide old results
@@ -54,35 +54,16 @@ document.getElementById("explainBtn").addEventListener("click", async () => {
   try {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    chrome.tabs.sendMessage(tab.id, { action: "getSelection" }, (response) => {
+    chrome.tabs.sendMessage(tab.id, { action: "solveQuizDirectly" }, (response) => {
       if (chrome.runtime.lastError) {
         showResult("Please refresh the page to use the extension.", "error");
         resetButton();
         return;
       }
 
-      if (response && response.data && response.data.length > 0) {
-        
-        // Update loading text for the AI phase
-        explainBtn.innerHTML = `<span class="spinner"></span> Thinking... 🤔`;
-
-        chrome.runtime.sendMessage(
-          { action: "fetchAIExplanation", text: response.data },
-          (aiResponse) => {
-            if (aiResponse.error) {
-              showResult("Error: Could not connect to the AI.", "error");
-            } else {
-              chrome.tabs.sendMessage(tab.id, { action: "applyAIResponse", data: aiResponse.result });
-              showResult("The answers have been applied! Scroll down to see them.", "success");
-            }
-            // --- END LOADING STATE ---
-            resetButton();
-          }
-        );
-      } else {
-        showResult("Something went wrong while extracting the content.", "error");
-        resetButton();
-      }
+      // Success! We started the process on the page, the popup can safely die now.
+      showResult("AI Solver triggered! You can close this popup while it works in the background.", "success");
+      resetButton();
     });
   } catch (error) {
     showResult("An unexpected error occurred.", "error");
