@@ -2,126 +2,146 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Shadcn UI Color Palette & Typography */
     :root {
-      --background: #ffffff;
-      --foreground: #09090b;
-      --muted: #f4f4f5;
-      --muted-foreground: #71717a;
-      --border: #e4e4e7;
-      --input: #e4e4e7;
-      --primary: #18181b;
-      --primary-foreground: #fafafa;
-      --radius: 0.5rem;
+      /* User Provided Theme */
+      --background: oklch(1.0000 0 0);
+      --foreground: oklch(0.3211 0 0);
+      --card: oklch(1.0000 0 0);
+      --card-foreground: oklch(0.3211 0 0);
+      --popover: oklch(1.0000 0 0);
+      --popover-foreground: oklch(0.3211 0 0);
+      --primary: oklch(0.6231 0.1880 259.8145);
+      --primary-foreground: oklch(1.0000 0 0);
+      --secondary: oklch(0.9670 0.0029 264.5419);
+      --secondary-foreground: oklch(0.4461 0.0263 256.8018);
+      --muted: oklch(0.9846 0.0017 247.8389);
+      --muted-foreground: oklch(0.5510 0.0234 264.3637);
+      --accent: oklch(0.9514 0.0250 236.8242);
+      --accent-foreground: oklch(0.3791 0.1378 265.5222);
+      --destructive: oklch(0.6368 0.2078 25.3313);
+      --destructive-foreground: oklch(1.0000 0 0);
+      --border: oklch(0.9276 0.0058 264.5313);
+      --input: oklch(0.9276 0.0058 264.5313);
+      --ring: oklch(0.6231 0.1880 259.8145);
+      --radius: 0.375rem;
+
+      /* Extra variables */
+      --success: #10b981;
+      --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: oklch(0.2046 0 0);
+        --foreground: oklch(0.9219 0 0);
+        --card: oklch(0.2686 0 0);
+        --card-foreground: oklch(0.9219 0 0);
+        --popover: oklch(0.2686 0 0);
+        --popover-foreground: oklch(0.9219 0 0);
+        --primary: oklch(0.6231 0.1880 259.8145);
+        --primary-foreground: oklch(1.0000 0 0);
+        --secondary: oklch(0.2686 0 0);
+        --secondary-foreground: oklch(0.9219 0 0);
+        --muted: oklch(0.2393 0 0);
+        --muted-foreground: oklch(0.7155 0 0);
+        --accent: oklch(0.3791 0.1378 265.5222);
+        --accent-foreground: oklch(0.8823 0.0571 254.1284);
+        --destructive: oklch(0.6368 0.2078 25.3313);
+        --destructive-foreground: oklch(1.0000 0 0);
+        --border: oklch(0.3715 0 0);
+        --input: oklch(0.3715 0 0);
+        --ring: oklch(0.6231 0.1880 259.8145);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      width: 350px;
-      padding: 20px;
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      width: 360px;
+      padding: 24px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--background);
       color: var(--foreground);
       display: flex;
       flex-direction: column;
+      gap: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Card Containers */
+    .card {
+      background: var(--card);
+      color: var(--card-foreground);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
     }
 
     /* Title Styling */
+    .title-container {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
     .title {
       font-size: 1.5rem;
       font-weight: 700;
-      text-align: center;
-      margin: 0 0 16px 0;
       letter-spacing: -0.025em;
-      color: var(--foreground);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
     }
-
-    /* Guide / Accordion Styling */
-    details.guide {
-      background-color: var(--muted);
-      border-radius: var(--radius);
-      padding: 10px 12px;
-      margin-bottom: 20px;
+    
+    .subtitle {
       font-size: 0.8rem;
       color: var(--muted-foreground);
-      border: 1px solid var(--border);
-      transition: all 0.2s ease;
-    }
-
-    details.guide summary {
       font-weight: 500;
-      color: var(--foreground);
-      cursor: pointer;
-      list-style: none; 
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      user-select: none;
-    }
-
-    details.guide summary::-webkit-details-marker {
-      display: none;
-    }
-
-    details.guide summary::after {
-      content: "▼";
-      font-size: 0.6rem;
-      transition: transform 0.2s ease;
-    }
-
-    details.guide[open] summary::after {
-      transform: rotate(180deg);
-    }
-
-    details.guide ol {
-      margin: 10px 0 0 0;
-      padding-left: 20px;
-      line-height: 1.4;
-    }
-
-    details.guide li {
-      margin-bottom: 6px;
-    }
-
-    details.guide a {
-      color: var(--foreground);
-      font-weight: 600;
-      text-decoration: underline;
-      text-decoration-color: var(--border);
-      text-underline-offset: 2px;
-      transition: text-decoration-color 0.2s;
-    }
-
-    details.guide a:hover {
-      text-decoration-color: var(--foreground);
     }
 
     /* Form & Input Styling */
-    .label {
+    .section-title {
       display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      margin-bottom: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 10px;
     }
 
     input {
       display: flex;
-      height: 36px;
-      width: calc(100% - 24px);
+      height: 40px;
+      width: 100%;
       border-radius: var(--radius);
       border: 1px solid var(--input);
-      background-color: transparent;
-      padding: 8px 12px;
+      background-color: var(--background);
+      padding: 8px 14px;
       font-size: 0.875rem;
+      font-family: inherit;
+      color: var(--foreground);
       margin-bottom: 12px;
-      transition: border-color 0.2s;
+      transition: all 0.2s ease;
     }
 
     input:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px var(--primary);
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px var(--muted);
+    }
+    
+    input::placeholder {
+      color: var(--muted-foreground);
+      opacity: 0.7;
     }
 
     /* Button Styling */
@@ -131,82 +151,124 @@
       justify-content: center;
       border-radius: var(--radius);
       font-size: 0.875rem;
-      font-weight: 500;
-      height: 36px;
+      font-weight: 600;
+      font-family: inherit;
+      height: 40px;
       padding: 8px 16px;
       cursor: pointer;
       width: 100%;
-      transition: background-color 0.2s, color 0.2s;
-      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
       margin-bottom: 10px;
+      outline: none;
+    }
+    
+    .btn:focus-visible {
+      box-shadow: 0 0 0 3px var(--muted);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
     }
 
     .btn-primary {
       background-color: var(--primary);
       color: var(--primary-foreground);
+      box-shadow: var(--shadow);
     }
 
-    .btn-primary:hover {
-      background-color: #27272a;
+    .btn-primary:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .btn-magic {
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: var(--primary-foreground);
+      box-shadow: var(--shadow);
+    }
+    
+    .btn-magic:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
     }
 
     .btn-outline {
       background-color: transparent;
-      border-color: var(--input);
+      border: 1px solid var(--border);
       color: var(--foreground);
     }
 
-    .btn-outline:hover {
+    .btn-outline:hover:not(:disabled) {
       background-color: var(--muted);
     }
-
-    /* Divider */
-    .divider {
-      border: 0;
-      border-top: 1px solid var(--border);
-      margin: 16px 0;
-      width: 100%;
+    
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
 
     /* Results Area */
     #result {
-      margin-top: 12px;
-      font-size: 0.875rem;
+      margin-top: 4px;
+      font-size: 0.85rem;
       line-height: 1.5;
-      padding: 12px;
+      padding: 14px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       background-color: var(--background);
+      color: var(--foreground);
       display: none;
-      max-height: 250px;
+      max-height: 200px;
       overflow-y: auto;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     #status {
-      margin-top: 4px;
       font-size: 0.75rem;
-      color: #16a34a; 
+      color: var(--success); 
       text-align: center;
       min-height: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
     }
 
     /* Footer Styling */
     .footer {
-      margin-top: 24px;
       text-align: center;
       font-size: 0.75rem;
       color: var(--muted-foreground);
+      margin-top: 4px;
     }
 
     .footer a {
       color: var(--foreground);
       font-weight: 600;
       text-decoration: none;
-      transition: text-decoration 0.2s;
+      position: relative;
     }
 
-    .footer a:hover {
-      text-decoration: underline;
+    .footer a::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      transform: scaleX(0);
+      height: 1px;
+      bottom: -2px;
+      left: 0;
+      background-color: var(--foreground);
+      transform-origin: bottom right;
+      transition: transform 0.25s ease-out;
+    }
+    
+    .footer a:hover::after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
     }
 
     @keyframes spin {
@@ -215,12 +277,12 @@
 
     .spinner {
       display: inline-block;
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: #fff;
-      animation: spin 1s ease-in-out infinite;
+      animation: spin 0.8s ease-in-out infinite;
       margin-right: 8px;
       vertical-align: middle;
     }
@@ -228,30 +290,45 @@
 </head>
 <body>
 
-  <h1 class="title">Assignment Solver</h1>
+  <div class="title-container">
+    <h1 class="title">Coursera Auto Solver</h1>
+    <p class="subtitle">Speedrun your courses smoothly</p>
+  </div>
 
-  <details class="guide">
-    <summary>📖 How to use</summary>
-    <ol>
-      <li>Get a free <a href="https://ai.google.dev/aistudio" target="_blank">Gemini API key</a> and save it below.</li>
-      <li>Click <strong>Answer the questions</strong> to get AI solutions.</li>
-    </ol>
-  </details>
+  <!-- 1. Media Automation Module -->
+  <div class="card">
+    <label class="section-title" style="margin-bottom: 4px;">⚡ 1. Media Auto-Completer</label>
+    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 12px;">Instantly mark all videos, readings, and supplements as complete. No setup required.</p>
+    <button id="completeVideosBtn" class="btn btn-magic" style="margin-bottom: 0;">Complete Section Materials</button>
+  </div>
 
-  <div>
-    <label class="label">API Key Configuration</label>
-    <input type="password" id="apiKeyInput" placeholder="Paste your Gemini API Key">
-    <button id="saveBtn" class="btn btn-primary">Save Key</button>
+  <!-- 2. Question Extractor Module -->
+  <div class="card">
+    <label class="section-title" style="margin-bottom: 4px;">📋 2. Question Extractor</label>
+    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 12px;">Instantly extract and copy all questions from the current quiz or assignment. No API key needed.</p>
+    <button id="showQuestionsBtn" class="btn btn-outline" style="margin-bottom: 0;">Copy All Questions</button>
+  </div>
+
+  <!-- 3. AI Quiz Module -->
+  <div class="card">
+    <label class="section-title" style="margin-bottom: 4px;">🤖 3. Smart Quiz Solver</label>
+    <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 12px;">Automatically solves multiple choice and text-input quizzes using your Gemini API key.</p>
+    
     <div id="status"></div>
+    
+    <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+      <input type="password" id="apiKeyInput" placeholder="Paste Gemini API Key" autocomplete="off" style="margin-bottom: 0;">
+      <button id="saveBtn" class="btn btn-outline" style="margin-bottom: 0; width: auto; font-size: 0.8rem; padding: 4px 12px;">Save Key</button>
+    </div>
+    
+    <div style="text-align: right; margin-bottom: 14px;">
+      <a href="https://ai.google.dev/aistudio" target="_blank" style="font-size: 0.7rem; color: var(--primary); font-weight: 500; text-decoration: underline;">Get free API Key</a>
+    </div>
+
+    <button id="explainBtn" class="btn btn-primary" style="margin-bottom: 0;">Solve Current Quiz</button>
   </div>
 
-  <hr class="divider" />
-
-  <div>
-    <button id="explainBtn" class="btn btn-primary">Answer the questions !</button>
-    <button id="showQuestionsBtn" class="btn btn-outline">Extract questions</button>
-    <div id="result"></div>
-  </div>
+  <div id="result" style="display: none;"></div>
 
   <div class="footer">
     created by <a href="https://github.com/Youssef-Ghafir" target="_blank">YG</a>

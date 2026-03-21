@@ -1,28 +1,53 @@
 {
   "manifest_version": 3,
-  "name": "Assignment Solver",
+  "name": "Coursera Auto Solver",
   "version": "1.0.0",
-  "description": "An AI-powered assistant to help extract and solve Coursera assignments.",
-  
+  "description": "This is a coursera auto solver extension for coursera assignments, quizzes. you can use to make all the videos,lectures,quizzes,assignments complete.",
   "permissions": [
     "activeTab",
     "scripting",
     "storage"
   ],
-  
   "background": {
     "service_worker": "background.js"
   },
-  
   "content_scripts": [
     {
-      "matches": ["*://*.coursera.org/*"],
-      "js": ["content.js"]
+      "matches": [
+        "*://*.coursera.org/learn/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    },
+    {
+      "run_at": "document_start",
+      "matches": [
+        "*://*.coursera.org/learn/*"
+      ],
+      "js": [
+        "intercept.js"
+      ],
+      "world": "MAIN"
     }
   ],
-  
+  "host_permissions": [
+    "*://*.coursera.org/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Assignment Solver"
+    "default_title": "Assignment Solver",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   }
 }

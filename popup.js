@@ -89,6 +89,49 @@ document.getElementById("explainBtn").addEventListener("click", async () => {
     resetButton();
   }
 });
+
+document.getElementById("completeVideosBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("completeVideosBtn");
+  const resultDiv = document.getElementById("result");
+  
+  const resetButton = () => {
+    btn.disabled = false;
+    btn.innerText = "Complete All Videos/Lectures";
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+  };
+
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Working...`;
+  btn.style.opacity = "0.7";
+  btn.style.cursor = "not-allowed";
+  resultDiv.style.display = "none";
+  
+  try {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    chrome.tabs.sendMessage(tab.id, { action: "completeVideos" }, (response) => {
+      if (chrome.runtime.lastError) {
+        resultDiv.style.display = "block";
+        resultDiv.innerText = "Please wait a moment or refresh the Coursera page to use this feature.";
+        resultDiv.style.color = "#ef4444";
+        resetButton();
+        return;
+      }
+      if (response && response.status === "started") {
+        resultDiv.style.display = "block";
+        resultDiv.innerText = "Automagically completing course! Wait for the alert on the page.";
+        resultDiv.style.color = "#16a34a";
+      } else if (response && response.error) {
+        resultDiv.style.display = "block";
+        resultDiv.innerText = response.error;
+        resultDiv.style.color = "#ef4444";
+      }
+      resetButton();
+    });
+  } catch (e) {
+    resetButton();
+  }
+});
 document.getElementById("showQuestionsBtn").addEventListener("click", async () => {
   const resultDiv = document.getElementById("result");
   resultDiv.style.display = "block";
