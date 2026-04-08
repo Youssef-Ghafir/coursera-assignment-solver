@@ -17,7 +17,7 @@ async function getAIResponse(questionsArray) {
     return null;
   }
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent`;
 
   // Stringify the incoming questions array so the AI can read it
   const questionsJsonString = JSON.stringify(questionsArray, null, 2);
@@ -36,6 +36,7 @@ OUTPUT RULES (STRICTLY ENFORCED):
 3. Each object must have exactly two keys: "questionNumber" (integer) and "correctOptions" (array of strings).
 4. For "single_answer" and "multiple_answer" types: The strings inside "correctOptions" MUST be exact, copy-pasted matches of the correct strings from the input "options" array.
 5. For "text_input" types: Generate a concise, highly accurate, and direct answer to the question. Place this generated text as a single string inside the "correctOptions" array.
+6. For "essay" types: Generate a well-thought-out, comprehensive essay response (e.g. 3-4 sentences, or fulfilling the constraints of the prompt) as requested. Place this as a single string inside the "correctOptions" array.
 
 OUTPUT FORMAT EXAMPLE:
 [
@@ -55,7 +56,10 @@ Now, evaluate the input and provide the raw JSON output.
   try {
     const response = await fetch(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "x-goog-api-key": API_KEY
+      },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         // Setting a low temperature makes the AI more deterministic and less "creative" with formatting
@@ -67,8 +71,14 @@ Now, evaluate the input and provide the raw JSON output.
 
     const data = await response.json();
 
+    if (!response.ok) {
+      console.error("Gemini API HTTP Error:", data);
+      throw new Error((data.error && data.error.message) ? data.error.message : `HTTP Error ${response.status}`);
+    }
+
     if (!data.candidates || !data.candidates[0]) {
-      throw new Error("Invalid response from Gemini API");
+      console.error("Gemini API missing candidates. Raw response:", data);
+      throw new Error("Invalid response structure from Gemini API");
     }
 
     const rawText = data.candidates[0].content.parts[0].text;

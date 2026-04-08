@@ -48,7 +48,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         showOrUpdateBanner("Extracting questions and contacting AI... 🤖", "info");
 
         const arrayQuestions = scrapeAssessment();
-        
+
         if (!arrayQuestions || arrayQuestions.length === 0) {
             showOrUpdateBanner("No questions found on this page! Are you on a quiz?", "error");
             setTimeout(hideBanner, 4000);
@@ -56,23 +56,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
 
         console.log("Sending to AI background script...", arrayQuestions);
-        
+
         // Content script bypasses popup and talks directly to the stable background script
         chrome.runtime.sendMessage(
-          { action: "fetchAIExplanation", text: arrayQuestions },
-          (aiResponse) => {
-            if (aiResponse && aiResponse.error) {
-              showOrUpdateBanner("Error: " + aiResponse.error, "error");
-              setTimeout(hideBanner, 5000);
-            } else if (aiResponse && aiResponse.result) {
-              applyAnswersToDOM(aiResponse.result);
-              showOrUpdateBanner("Answers applied successfully! ✅", "success");
-              setTimeout(hideBanner, 4000);
-            } else {
-              showOrUpdateBanner("An unknown error occurred.", "error");
-              setTimeout(hideBanner, 4000);
+            { action: "fetchAIExplanation", text: arrayQuestions },
+            (aiResponse) => {
+                if (aiResponse && aiResponse.error) {
+                    showOrUpdateBanner("Error: " + aiResponse.error, "error");
+                    setTimeout(hideBanner, 5000);
+                } else if (aiResponse && aiResponse.result) {
+                    applyAnswersToDOM(aiResponse.result);
+                    showOrUpdateBanner("Answers applied successfully! ✅", "success");
+                    setTimeout(hideBanner, 4000);
+                } else {
+                    showOrUpdateBanner("An unknown error occurred.", "error");
+                    setTimeout(hideBanner, 4000);
+                }
             }
-          }
         );
     }
     if (request.action === "getSelection") {
@@ -115,10 +115,7 @@ function scrapeAssessment() {
     const scrapedAssessment = [];
 
     // Select all the main container blocks for the questions
-    let questionBlocks = document.querySelectorAll('.css-1erl2aq');
-    if (questionBlocks.length == 0) {
-        questionBlocks = document.querySelectorAll('.css-12u8wr5');
-    }
+    const questionBlocks = document.querySelectorAll('.css-1erl2aq, .css-12u8wr5, [data-testid="part-Submission_RichTextQuestion"]');
     console.log(questionBlocks);
 
     questionBlocks.forEach((block, index) => {
@@ -156,12 +153,14 @@ function scrapeAssessment() {
             });
         } else {
             // 3. Fallback for Text Input Questions
-            // Look for a standard text input, an input with no type defined, or a textarea
-            const textInputNode = block.querySelector('input[type="text"], input:not([type="radio"]):not([type="checkbox"]), textarea');
+            // Look for a standard text input, an input with no type defined, or a textarea/slate-editor
+            const standardInput = block.querySelector('input[type="text"], input:not([type="radio"]):not([type="checkbox"]), textarea');
+            const slateEditor = block.querySelector('[data-slate-editor="true"]');
 
-            if (textInputNode) {
+            if (slateEditor) {
+                questionType = 'essay';
+            } else if (standardInput) {
                 questionType = 'text_input';
-                // For text inputs, the 'options' array remains empty
             }
         }
 
@@ -178,10 +177,7 @@ function scrapeAssessment() {
 }
 function applyAnswersToDOM(correctAnswers) {
     // Select all the main container blocks for the questions
-    let questionBlocks = document.querySelectorAll('.css-1erl2aq');
-    if (questionBlocks.length === 0) {
-        questionBlocks = document.querySelectorAll('.css-12u8wr5');
-    }
+    const questionBlocks = document.querySelectorAll('.css-1erl2aq, .css-12u8wr5, [data-testid="part-Submission_RichTextQuestion"]');
 
     questionBlocks.forEach((block, index) => {
         const currentQuestionNumber = index + 1;
@@ -216,19 +212,31 @@ function applyAnswersToDOM(correctAnswers) {
             });
         } else {
             // --- HANDLE TEXT INPUTS ---
-            // Look for a standard text input, an input with no type defined, or a textarea
-            const textInputNode = block.querySelector('input[type="text"], input:not([type="radio"]):not([type="checkbox"]), textarea');
+            // Look for a standard text input, an input with no type defined, or a textarea/slate-editor
+            const textInputNode = block.querySelector('input[type="text"], input:not([type="radio"]):not([type="checkbox"]), textarea, [data-slate-editor="true"]');
 
             if (textInputNode) {
                 // Grab the generated text string from our JSON
                 const textToType = answerData.correctOptions[0];
 
-                // 1. Set the raw value
-                textInputNode.value = textToType;
+                if (textInputNode.hasAttribute('contenteditable')) {
+                    // Handle Slate Editor / ContentEditable
+                    textInputNode.focus();
 
-                // 2. Dispatch events so the React application registers the state change
-                textInputNode.dispatchEvent(new Event('input', { bubbles: true }));
-                textInputNode.dispatchEvent(new Event('change', { bubbles: true }));
+                    // We must wait a tiny bit for the editor to focus properly before typing
+                    setTimeout(() => {
+                        // Select all placeholder text and replace it with our AI answer
+                        document.execCommand('selectAll', false, null);
+                        document.execCommand('insertText', false, textToType);
+                    }, 50);
+                } else {
+                    // 1. Set the raw value for standard inputs
+                    textInputNode.value = textToType;
+
+                    // 2. Dispatch events so the React application registers the state change
+                    textInputNode.dispatchEvent(new Event('input', { bubbles: true }));
+                    textInputNode.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             }
         }
     });
@@ -325,14 +333,14 @@ async function startCompletionLoop() {
         for (let i = 0; i < itemsToComplete.length; i += CHUNK_SIZE) {
             const chunk = itemsToComplete.slice(i, i + CHUNK_SIZE);
             const chunkEnd = Math.min(i + CHUNK_SIZE, itemsToComplete.length);
-            
+
             showOrUpdateBanner(`Completing items ${i + 1} to ${chunkEnd} of ${itemsToComplete.length}... ⚡`);
 
             const chunkPromises = chunk.map(async (itemObj, indexInChunk) => {
                 const itemId = itemObj.id;
                 const itemType = itemObj.type;
                 const absIndex = i + indexInChunk + 1;
-                
+
                 console.log(`[${absIndex}/${itemsToComplete.length}] Faking completion for item: ${itemId} (Type: ${itemType})`);
 
                 try {

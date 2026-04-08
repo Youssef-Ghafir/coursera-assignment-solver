@@ -4,8 +4,6 @@
 > 
 > * **No Liability:** The creator of this extension is not responsible for any consequences that may arise from using this tool.
 > * **Academic Integrity:** Coursera has strict policies regarding academic integrity. Using this tool to automatically complete courses or solve quizzes may violate Coursera's Terms of Service and Honor Code.
-> * **Account Risk:** Use this extension at your own risk. Doing so may result in your Coursera account being suspended, banned, or having your certificates revoked. 
-> 
 > By using this open-source software, you agree that you are taking full responsibility for your own actions.
 
 # Coursera Auto Solver 🎓
