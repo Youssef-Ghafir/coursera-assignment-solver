@@ -6,7 +6,9 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "notifications",
+    "tabs"
   ],
   "background": {
     "service_worker": "background.js"
@@ -14,7 +16,9 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*.coursera.org/learn/*"
+        "*://*.coursera.org/learn/*",
+        "*://mark.skills.network/*",
+        "*://*.skills.network/*"
       ],
       "js": [
         "content.js"
@@ -32,7 +36,13 @@
     }
   ],
   "host_permissions": [
-    "*://*.coursera.org/*"
+    "*://*.coursera.org/*",
+    "*://*.skills.network/*",
+    "*://generativelanguage.googleapis.com/*",
+    "*://api.openai.com/*",
+    "*://api.groq.com/*",
+    "*://api.anthropic.com/*",
+    "*://openrouter.ai/*"
   ],
   "icons": {
     "16": "icons/icon16.png",
@@ -49,5 +59,9 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
-  }
+  },
+  "web_accessible_resources": [{
+    "resources": ["notes.html", "flashcards.html"],
+    "matches": ["<all_urls>"]
+  }]
 }
