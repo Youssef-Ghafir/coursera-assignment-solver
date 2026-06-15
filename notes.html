@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADHD Study Notes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 48px 28px 80px;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 17px;
+      line-height: 1.75;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    h1 { font-size: 2rem; color: #1d4ed8; margin-bottom: 6px; line-height: 1.2; }
+    h2 { font-size: 1.25rem; color: #1e40af; margin-top: 36px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+    h3 { font-size: 1.05rem; color: #374151; margin-top: 20px; margin-bottom: 6px; }
+    p { margin-bottom: 12px; }
+    p.tldr { font-weight: 600; color: #374151; background: #f1f5f9; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.95rem; }
+    ul, ol { padding-left: 22px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+    strong { color: #1d4ed8; }
+    .key-point {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+    .why-matters {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+    .toolbar {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+    }
+    .toolbar button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .toolbar button:hover { background: #1d4ed8; }
+    .toolbar button.secondary { background: #e2e8f0; color: #374151; }
+    .toolbar button.secondary:hover { background: #cbd5e1; }
+    #loading { color: #64748b; padding: 60px 0; text-align: center; font-size: 1.1rem; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #0f172a; color: #f1f5f9; }
+      h1 { color: #60a5fa; }
+      h2 { color: #93c5fd; border-color: #1e293b; }
+      h3 { color: #cbd5e1; }
+      p.tldr { background: #1e293b; color: #cbd5e1; }
+      strong { color: #60a5fa; }
+      .key-point { background: #1e3a5f; border-color: #3b82f6; }
+      .why-matters { background: #052e16; border-color: #16a34a; }
+      .toolbar button.secondary { background: #1e293b; color: #e2e8f0; }
+      #loading { color: #94a3b8; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+    <button id="copyBtn">Copy All</button>
+  </div>
+  <div id="loading">Loading your notes...</div>
+  <div id="content" style="display:none;"></div>
+  <script>
+    document.getElementById('copyBtn').addEventListener('click', function() {
+      const text = document.getElementById('content').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        this.textContent = 'Copied!';
+        setTimeout(() => { this.textContent = 'Copy All'; }, 2000);
+      });
+    });
+
+    function displayNotes(html) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      document.getElementById('content').innerHTML = html;
+    }
+
+    chrome.storage.local.get(['generatedNotes'], (result) => {
+      if (result.generatedNotes) {
+        displayNotes(result.generatedNotes);
+      } else {
+        document.getElementById('loading').textContent = 'Still generating your notes... this can take up to 30 seconds.';
+        chrome.storage.onChanged.addListener((changes, area) => {
+          if (area === 'local' && changes.generatedNotes && changes.generatedNotes.newValue) {
+            displayNotes(changes.generatedNotes.newValue);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

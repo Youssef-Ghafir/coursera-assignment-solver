@@ -7,31 +7,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Quieter, tinted neutral background */
-      --background: #f8fafc;
+      --bg: #f8fafc;
       --card: #ffffff;
-      
-      /* Bolder text */
-      --foreground: #0f172a;
+      --fg: #0f172a;
       --muted: #64748b;
-      
-      /* Semantic Colorize */
-      --primary: #2563eb;       /* Electric Blue */
+      --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --secondary: #e2e8f0;     /* Muted secondary */
+      --secondary: #e2e8f0;
       --secondary-text: #475569;
-      --accent: #f59e0b;        /* Amber for power action */
+      --accent: #f59e0b;
       --accent-hover: #d97706;
       --border: #e2e8f0;
-      
-      --radius-sm: 8px;
+      --success: #16a34a;
+      --danger: #ef4444;
+      --radius: 8px;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --background: #0f172a;
+        --bg: #0f172a;
         --card: #1e293b;
-        --foreground: #f8fafc;
+        --fg: #f8fafc;
         --muted: #94a3b8;
         --primary: #3b82f6;
         --primary-hover: #60a5fa;
@@ -46,254 +42,666 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      width: 360px;
-      padding: 24px;
-      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--background);
-      color: var(--foreground);
+      width: 380px;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
       display: flex;
       flex-direction: column;
-      gap: 20px;
     }
 
-    /* Quieter title, bold weight, extreme scale */
+    /* ── Header ── */
     .header {
-      margin-bottom: 4px;
-    }
-
-    .title {
-      font-size: 1.8rem;
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 4px;
-      color: var(--foreground);
-      letter-spacing: -0.03em;
-    }
-    
-    .subtitle {
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 500;
-      line-height: 1.4;
-    }
-
-    /* Arrange: Grouped sections instead of monotonous cards */
-    .section {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding-bottom: 20px;
+      padding: 18px 20px 12px;
       border-bottom: 1px solid var(--border);
     }
-    
-    .section:last-of-type {
-      border-bottom: none;
-      padding-bottom: 4px;
+    .title {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .subtitle {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
     }
 
-    .section-header {
+    /* ── API Setup ── */
+    .api-bar {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 2px;
-    }
-    
-    .section-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-
-    .section-desc {
-      font-size: 0.75rem;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    /* Inputs */
-    .input-group {
-      display: flex;
       gap: 8px;
     }
-
-    input {
-      flex: 1;
-      height: 38px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background-color: var(--card);
-      padding: 0 12px;
-      font-size: 0.85rem;
-      font-family: inherit;
-      color: var(--foreground);
-      transition: all 0.2s ease;
-      min-width: 0;
+    .input-row {
+      display: flex;
+      gap: 6px;
     }
-
+    input[type="password"], input[type="text"], input[type="number"] {
+      flex: 1;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 0 11px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      color: var(--fg);
+      min-width: 0;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
     input:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
-    
-    input::placeholder {
-      color: var(--muted);
-      opacity: 0.7;
-    }
+    input::placeholder { color: var(--muted); opacity: 0.7; }
 
-    /* Buttons: Semantic coloring, quieter effects, bold purpose */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      font-weight: 600;
-      font-family: inherit;
-      height: 38px;
-      padding: 0 16px;
-      cursor: pointer;
-      width: 100%;
-      border: none;
-      transition: all 0.15s ease-out;
-    }
-    
-    .btn:active { transform: scale(0.98); }
-
-    .btn-primary {
-      background-color: var(--primary);
-      color: #fff;
-    }
-    .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); }
-
-    .btn-accent {
-      background-color: var(--accent);
-      color: #fff;
-    }
-    .btn-accent:hover:not(:disabled) { background-color: var(--accent-hover); }
-
-    .btn-secondary {
-      background-color: var(--secondary);
-      color: var(--secondary-text);
-      font-weight: 600;
-    }
-    .btn-secondary:hover:not(:disabled) { opacity: 0.8; }
-    
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* Utilities */
-    .meta-row {
-      display: flex; 
-      justify-content: space-between; 
+    .api-meta {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
     }
-
     #status {
-      font-size: 0.75rem;
-      color: #10b981; 
+      font-size: 0.73rem;
+      color: var(--success);
       font-weight: 500;
     }
-
     .link {
-      font-size: 0.7rem; 
-      color: var(--primary); 
-      text-decoration: none; 
+      font-size: 0.7rem;
+      color: var(--primary);
+      text-decoration: none;
       font-weight: 600;
     }
     .link:hover { text-decoration: underline; }
 
-    #result {
-      font-size: 0.8rem;
-      line-height: 1.5;
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      background-color: var(--card);
-      border: 1px solid var(--border);
-      color: var(--foreground);
-      display: none;
-      max-height: 150px;
-      overflow-y: auto;
+    /* ── Provider Pills ── */
+    .provider-pills {
+      display: flex;
+      gap: 4px;
+    }
+    .provider-pill {
+      flex: 1;
+      padding: 5px 2px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .provider-pill.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+    .provider-pill:hover:not(.active) {
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
+    select {
+      height: 30px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--fg);
+      font-size: 0.75rem;
+      font-family: inherit;
+      padding: 0 8px;
+      width: 100%;
+      cursor: pointer;
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* ── Tab Bar ── */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-btn:hover:not(.active) { color: var(--fg); }
+
+    /* ── Tab Panes ── */
+    .tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 20px;
+    }
+    .tab-pane.active { display: flex; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: var(--radius);
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      height: 36px;
+      padding: 0 14px;
+      cursor: pointer;
+      width: 100%;
+      border: none;
+      transition: background-color 0.15s, opacity 0.15s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .btn-secondary { background: var(--secondary); color: var(--secondary-text); }
+    .btn-secondary:hover:not(:disabled) { opacity: 0.8; }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      flex-shrink: 0;
+      background: var(--secondary);
+      color: var(--secondary-text);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: opacity 0.15s;
+    }
+    .btn-icon:hover { opacity: 0.75; }
+    .btn-save {
+      background: var(--secondary);
+      color: var(--secondary-text);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 0 12px;
+      height: 36px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .btn-save:hover { opacity: 0.8; }
+
+    .btn-row { display: flex; gap: 7px; }
+    .btn-row .btn { flex: 1; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+
+    /* ── Status bar ── */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+    .status-dot.ready { background: var(--success); }
+    .status-dot.partial { background: var(--accent); }
+    .status-dot.not-ready { background: var(--danger); }
+
+    /* ── Badge ── */
+    .badge {
+      font-size: 0.62rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.15);
+      color: #fff;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+    .badge-muted {
+      background: var(--secondary);
+      color: var(--muted);
+    }
+
+    /* ── Result area ── */
+    #result {
+      font-size: 0.78rem;
+      line-height: 1.5;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      display: none;
+      max-height: 140px;
+      overflow-y: auto;
+      margin: 0 20px 4px;
+    }
+
+    /* ── Preview area ── */
+    #previewArea {
+      display: none;
+      flex-direction: column;
+      gap: 7px;
+    }
+    #previewContent {
+      font-size: 0.76rem;
+      line-height: 1.5;
+      padding: 9px 11px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--border);
+      max-height: 150px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      color: var(--fg);
+    }
+    .preview-actions { display: flex; gap: 7px; }
+
+    /* ── Toggle rows ── */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .toggle-label {
+      font-size: 0.8rem;
+      color: var(--fg);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-tag {
+      font-size: 0.62rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--secondary);
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 20px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--primary); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* ── Collapsible ── */
+    .collapsible-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .collapsible-body { display: none; flex-direction: column; gap: 8px; margin-top: 6px; }
+    .collapsible-body.open { display: flex; }
+    .chevron { font-size: 0.65rem; color: var(--muted); transition: transform 0.2s; }
+    .chevron.open { transform: rotate(180deg); }
+
+    /* ── Week / Course list ── */
+    .list-box {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 140px;
+      overflow-y: auto;
+      padding: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--fg);
+      cursor: pointer;
+    }
+    .list-item input[type="checkbox"] {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      accent-color: var(--primary);
+    }
+
+    /* ── Textarea ── */
+    textarea {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 8px 11px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      color: var(--fg);
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    textarea::placeholder { color: var(--muted); opacity: 0.7; }
+
+    /* ── Week selector area ── */
+    #weekSelectorArea { display: none; flex-direction: column; gap: 7px; }
+
+    /* ── Walk-Away status text ── */
+    #walkAwayStatus { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── Footer ── */
     .footer {
+      padding: 10px 20px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      margin-top: 4px;
-      font-size: 0.75rem;
+      gap: 5px;
+      font-size: 0.72rem;
       color: var(--muted);
       text-align: center;
-      font-weight: 500;
+      border-top: 1px solid var(--border);
     }
-
-    .footer a {
-      color: var(--foreground);
-      font-weight: 600;
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    
-    .footer a:hover { 
-      color: var(--primary);
-    }
-    
+    .footer a { color: var(--fg); font-weight: 600; text-decoration: none; }
+    .footer a:hover { color: var(--primary); }
     .update-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 4px 10px;
-      background-color: var(--secondary);
-      border-radius: 12px;
-      color: var(--foreground) !important;
+      padding: 3px 9px;
+      background: var(--secondary);
+      border-radius: 10px;
+      color: var(--fg) !important;
+      font-weight: 600;
     }
-    .update-badge:hover {
-      background-color: var(--border);
-    }
+    .update-badge:hover { opacity: 0.8; }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <div class="header">
     <h1 class="title">Auto Solver</h1>
     <p class="subtitle">Speedrun your courses efficiently.</p>
   </div>
 
-  <div class="section">
-    <div class="section-header" style="margin-bottom: 4px;">
-      <span class="section-title">API Setup</span>
+  <!-- API Setup -->
+  <div class="api-bar">
+    <div class="provider-pills">
+      <button class="provider-pill active" data-provider="gemini">Gemini</button>
+      <button class="provider-pill" data-provider="groq">Groq</button>
+      <button class="provider-pill" data-provider="openai">OpenAI</button>
+      <button class="provider-pill" data-provider="claude">Claude</button>
+      <button class="provider-pill" data-provider="openrouter">OpenRouter</button>
     </div>
-    <div class="input-group">
+    <div class="input-row">
       <input type="password" id="apiKeyInput" placeholder="Gemini API Key" autocomplete="off">
-      <button id="saveBtn" class="btn btn-secondary" style="width: auto;">Save</button>
+      <button id="toggleVisibilityBtn" class="btn-icon" title="Show/hide key">👁️</button>
+      <button id="clearKeyBtn" class="btn-icon" title="Clear key">×</button>
+      <button id="saveBtn" class="btn-save">Save</button>
     </div>
-    <div class="meta-row">
+    <select id="modelSelect"></select>
+    <div class="api-meta">
       <div id="status"></div>
-      <a href="https://ai.google.dev/aistudio" target="_blank" class="link">Get Free Key →</a>
+      <a id="getKeyLink" href="https://ai.google.dev/aistudio" target="_blank" class="link">Get Free Key →</a>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Smart Quiz Solver</span>
-      <span class="section-desc">Automatically solve assignments using AI.</span>
-    </div>
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="solver">Solver</button>
+    <button class="tab-btn" data-tab="automate">Automate</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </div>
+
+  <!-- ── SOLVER TAB ── -->
+  <div id="tab-solver" class="tab-pane active">
     <button id="explainBtn" class="btn btn-primary">Solve Current Quiz</button>
-    <button id="showQuestionsBtn" class="btn btn-secondary">Copy Questions Only</button>
-    <div id="result"></div>
-  </div>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Media Automation</span>
-      <span class="section-desc">Instantly complete videos and readings.</span>
+    <div class="btn-row">
+      <button id="showQuestionsBtn" class="btn btn-secondary">Copy Questions</button>
+      <button id="clearCacheBtn" class="btn btn-secondary">Clear Cache</button>
     </div>
-    <button id="completeVideosBtn" class="btn btn-accent">Complete Materials</button>
+
+    <hr class="divider">
+
+    <span class="section-label">AI Tools</span>
+
+    <div class="btn-row">
+      <button id="flashcardsBtn" class="btn btn-secondary">Flashcards</button>
+      <button id="peerReviewBtn" class="btn btn-secondary">Peer Review</button>
+    </div>
+    <div class="btn-row">
+      <button id="forumPostBtn" class="btn btn-secondary">Forum Post</button>
+      <button id="codesolveBtn" class="btn btn-secondary">Code Solve</button>
+    </div>
+    <button id="transcriptQABtn" class="btn btn-secondary">Ask About This Video</button>
+
+    <!-- Preview area -->
+    <div id="previewArea">
+      <div id="previewContent"></div>
+      <div class="preview-actions">
+        <button id="applyAnswersBtn" class="btn btn-primary" style="flex:1;">Apply Answers</button>
+        <button id="discardPreviewBtn" class="btn btn-secondary" style="flex:1;">Discard</button>
+      </div>
+    </div>
   </div>
 
+  <!-- ── AUTOMATE TAB ── -->
+  <div id="tab-automate" class="tab-pane">
+    <!-- Token status -->
+    <div class="status-bar">
+      <span class="status-dot" id="tokenDot"></span>
+      <span id="tokenStatus">Checking...</span>
+    </div>
+
+    <button id="completeEverythingBtn" class="btn btn-accent">
+      Complete Everything (AI) <span class="badge">videos + quizzes</span>
+    </button>
+    <button id="completeVideosBtn" class="btn btn-primary">Complete Materials Only</button>
+
+    <div class="btn-row">
+      <button id="autopilotBtn" class="btn btn-secondary">Autopilot</button>
+      <button id="specCompleteBtn" class="btn btn-secondary">Specialization</button>
+    </div>
+    <button id="speedRunBtn" class="btn btn-secondary">Speed-Run Analyzer</button>
+
+    <!-- Per-week selector (shown when togglePerWeek is on) -->
+    <div id="weekSelectorArea">
+      <button id="loadWeeksBtn" class="btn btn-secondary">Load Course Weeks</button>
+      <div id="weekList" class="list-box" style="display:none;"></div>
+      <button id="completeSelectedBtn" class="btn btn-accent" style="display:none;">Complete Selected Weeks</button>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Walk-Away Mode -->
+    <div class="collapsible-trigger" id="walkAwayTrigger">
+      <span style="font-size:0.82rem;font-weight:600;">Walk-Away Mode</span>
+      <span class="chevron" id="walkAwayChevron">▼</span>
+    </div>
+    <div class="collapsible-body" id="walkAwayBody">
+      <p style="font-size:0.72rem;color:var(--muted);line-height:1.4;">Leave your computer — the extension completes courses on its own.</p>
+      <button id="loadCoursesBtn" class="btn btn-secondary">Load Enrolled Courses</button>
+      <div id="courseList" class="list-box" style="display:none;"></div>
+      <div class="btn-row" id="walkAwayBtns" style="display:none;">
+        <button id="startWalkAwayBtn" class="btn btn-accent">Start Walk-Away</button>
+        <button id="stopWalkAwayBtn" class="btn btn-secondary">Stop</button>
+      </div>
+      <div id="walkAwayStatus"></div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS TAB ── -->
+  <div id="tab-settings" class="tab-pane">
+    <span class="section-label">Behavior</span>
+
+    <label class="toggle-row">
+      <span class="toggle-label">Auto-submit after solving</span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="toggleAutoSubmit">
+        <span class="toggle-slider"></span>
+      </span>
+    </label>
+
+    <label class="toggle-row">
+      <span class="toggle-label">Preview answers before applying</span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="togglePreview">
+        <span class="toggle-slider"></span>
+      </span>
+    </label>
+
+    <label class="toggle-row">
+      <span class="toggle-label">Answer explanations <span class="badge-tag">slower</span></span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="toggleExplanations">
+        <span class="toggle-slider"></span>
+      </span>
+    </label>
+
+    <label class="toggle-row">
+      <span class="toggle-label">Human-style writing <span class="badge-tag">undetectable</span></span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="toggleHumanStyle">
+        <span class="toggle-slider"></span>
+      </span>
+    </label>
+
+    <label class="toggle-row">
+      <span class="toggle-label">Per-week completion</span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="togglePerWeek">
+        <span class="toggle-slider"></span>
+      </span>
+    </label>
+
+    <label class="toggle-row">
+      <span class="toggle-label">Generate ADHD notes after completing <span class="badge-tag">AI</span></span>
+      <span class="toggle-switch">
+        <input type="checkbox" id="toggleADHDNotes">
+        <span class="toggle-slider"></span>
+      </span>
+    </label>
+
+    <hr class="divider">
+
+    <span class="section-label">Custom Instructions</span>
+
+    <div class="collapsible-trigger" id="customInstrTrigger" style="margin-top:2px;">
+      <span style="font-size:0.78rem;color:var(--muted);">e.g. answer in Spanish, keep it simple…</span>
+      <span class="chevron" id="customInstrChevron">▼</span>
+    </div>
+    <div class="collapsible-body" id="customInstrBody">
+      <textarea id="customInstructions" rows="2" placeholder="e.g. Answer in Spanish, I'm a beginner, keep it simple..."></textarea>
+      <button id="saveInstructionsBtn" class="btn btn-secondary" style="width:auto;align-self:flex-end;height:32px;padding:0 14px;font-size:0.78rem;">Save</button>
+    </div>
+  </div>
+
+  <!-- Shared result area (outside tabs) -->
+  <div id="result"></div>
+
+  <!-- Footer -->
   <div class="footer">
-    <span>created by <a href="https://github.com/Youssef-Ghafir" target="_blank">YG</a></span>
+    <span>enhanced by <strong>Xavi</strong> &middot; by <a href="https://github.com/Youssef-Ghafir" target="_blank">YG</a></span>
     <a href="https://github.com/Youssef-Ghafir/coursera-assignment-solver" target="_blank" class="update-badge">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
       Check for updates
     </a>
   </div>
