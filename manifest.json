@@ -17,7 +17,8 @@
         "*://*.coursera.org/learn/*"
       ],
       "js": [
-        "content.js"
+        "content.js",
+        "dialogue-assist.js"
       ]
     },
     {
@@ -29,6 +30,12 @@
         "intercept.js"
       ],
       "world": "MAIN"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/icon48.png"],
+      "matches": ["*://*.coursera.org/*"]
     }
   ],
   "host_permissions": [

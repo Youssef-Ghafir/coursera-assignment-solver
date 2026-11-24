@@ -611,18 +611,32 @@ async function applyAnswersToDOM(correctAnswers) {
     return { appliedCount, failures };
 }
 
-async function solveCurrentAssessment() {
-    showOrUpdateBanner("Extracting questions and contacting AI... 🤖", "info");
+async function solveCurrentAssessment({ notify = true, onProgress = () => {} } = {}) {
+    if (notify) showOrUpdateBanner("Extracting questions and contacting AI... 🤖", "info");
+    const initialPath = window.location.pathname;
+    const initialBlocks = assessmentQuestionBlocks();
     try {
+        onProgress("Reading the assessment questions…");
         const { questions, issues } = await scrapeAssessmentDetailed();
         if (questions.length === 0) {
             throw new Error("No supported questions were found on this page.");
         }
 
+        onProgress("Asking your selected AI provider…");
         const answers = await requestAIAssessmentAnswers(questions);
+        const currentBlocks = assessmentQuestionBlocks();
+        if (
+            window.location.pathname !== initialPath ||
+            initialBlocks.length !== currentBlocks.length ||
+            initialBlocks.some((block, index) => block !== currentBlocks[index])
+        ) {
+            throw new Error("The assessment changed while answers were being generated. Try again on the current activity.");
+        }
+        onProgress("Filling the answers for your review…");
         const summary = await applyAnswersToDOM(answers);
         const failures = [...issues, ...summary.failures];
 
+        if (!notify) return { ...summary, failures };
         if (failures.length === 0) {
             showOrUpdateBanner("Answers and code added successfully! ✅", "success");
             setTimeout(hideBanner, 4000);
@@ -638,9 +652,19 @@ async function solveCurrentAssessment() {
         );
         setTimeout(hideBanner, 6500);
     } catch (error) {
+        if (!notify) throw error;
         showOrUpdateBanner(`Error: ${error.message || "Could not solve this assessment."}`, "error");
         setTimeout(hideBanner, 5500);
     }
+}
+
+function findDialogueComposer(root) {
+    const composer = root.querySelector(
+        '[data-testid="coach-rich-input-field-content"] textarea:not([aria-hidden="true"]):not([readonly]):not([disabled])'
+    ) || root.querySelector(
+        'textarea[aria-label="Send a message"]:not([aria-hidden="true"]):not([readonly]):not([disabled])'
+    );
+    return composer && !composer.closest('[aria-disabled="true"]') ? composer : null;
 }
 
 function extractDialogueState() {
@@ -649,10 +673,8 @@ function extractDialogueState() {
         throw new Error("No Coursera dialogue was found on this page.");
     }
 
-    const composer = root.querySelector(
-        'textarea[aria-label="Send a message"]:not([aria-hidden="true"]):not([readonly])'
-    );
-    if (!composer || composer.disabled || composer.closest('[aria-disabled="true"]')) {
+    const composer = findDialogueComposer(root);
+    if (!composer) {
         throw new Error("Start the Coursera dialogue and wait for its question first.");
     }
 
@@ -743,6 +765,7 @@ function fillReactTextarea(textarea, value) {
 
 async function fillCurrentDialogueAnswer() {
     const initialState = extractDialogueState();
+    const initialPath = window.location.pathname;
     if (initialState.composer.value.trim()) {
         throw new Error("The dialogue message box already contains text. Clear it before generating an answer.");
     }
@@ -750,7 +773,11 @@ async function fillCurrentDialogueAnswer() {
     const reply = await requestDialogueAnswer(initialState.messages, initialState.currentQuestion);
     const currentState = extractDialogueState();
 
-    if (currentState.currentQuestion !== initialState.currentQuestion) {
+    if (
+        window.location.pathname !== initialPath ||
+        currentState.composer !== initialState.composer ||
+        currentState.currentQuestion !== initialState.currentQuestion
+    ) {
         throw new Error("The Coursera dialogue changed while the answer was being generated. Try again.");
     }
     if (currentState.composer.value.trim()) {

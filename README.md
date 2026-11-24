@@ -46,6 +46,10 @@ A sleek, lightweight Chrome Extension to automate and help you navigate your Cou
 5. Open a Coursera quiz and click **Solve Current Quiz**. The selected provider is used until you explicitly choose and verify another one.
 6. On a Coursera Coach dialogue, click **Fill Dialogue Answer** to place a draft in the message box. The extension never clicks **Send** for you.
 
+On supported Coach and Role Play pages, a **Need help with this dialogue?** prompt also appears beside the message composer. Click **Fill Dialogue Answer** there to use your saved AI provider without opening the popup. The prompt shows drafting progress and errors, protects existing message text, and can be dismissed for that activity until the tab is refreshed. A reply is generated only after you click the button.
+
+Supported assignment attempts, quizzes, and exams also show an in-page prompt above the question list, outside the individual question cards, with the extension icon and a **Solve Current Quiz** button. It uses the same saved AI provider, reports progress and any questions that could not be processed, and leaves submission to you. Prompts appear only when supported question fields are detected and can be dismissed per activity.
+
 ## 🎯 Course Requirements
 
 The **Course Requirements** feature helps learners find the activities that Coursera marks as relevant to passing a course. Instead of listing every video, reading, and practice item, it builds a focused view of graded or passable work and lets the user navigate directly to supported activities from the popup.
@@ -161,6 +165,7 @@ API keys are stored in `chrome.storage.local` in your Chrome profile and are sen
 | --- | --- |
 | `intercept.js` | Runs in Coursera's main page context and normalizes Fetch/XHR request information. |
 | `content.js` | Receives intercepted messages, retains the allowlisted request context, extracts course content, and applies supported page actions. |
+| `dialogue-assist.js` | Detects supported dialogues and assessments, then shows branded in-page prompts that reuse the existing AI actions. |
 | `background.js` | Coordinates AI-provider requests and extension background behavior. |
 | `popup.html` / `popup.js` | Provides the extension controls, provider configuration, and user feedback. |
 | `ai-providers.js` | Defines supported AI providers, models, endpoints, and request adapters. |
